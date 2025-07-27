@@ -5,7 +5,8 @@ const cors=require('cors')
 const userRouter=require('./routes/userRoutes')
 
 
-const dotenv=require('dotenv')
+const dotenv=require('dotenv');
+const connectdb = require('./dbconnect');
 dotenv.config();
 
 
@@ -19,6 +20,7 @@ app.use('/user',userRouter);
 
 
 const PORT=process.env.PORT || 5000;
+connectdb()
 app.listen(PORT,()=>{
     console.log("the app is running on port",PORT)
 })
