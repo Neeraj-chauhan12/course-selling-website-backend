@@ -1,0 +1,84 @@
+const admin=require("../models/adminModel")
+const bcrypt=require("bcrypt")
+const jwt=require("jsonwebtoken")
+const cookie =require("cookie-parser")
+
+exports.register=async(req,res)=>{
+   const {adminname,email,password}=req.body;
+
+   try {
+     const adminExist=await admin.findOne({email})
+   if(adminExist){
+    return res.status(400).json({error:"admin already exists"});
+
+   }
+
+  const hassPassword=await bcrypt.hash(password, 10);
+
+  const newAdmin=new admin({
+    adminname,
+    email,
+    password:hassPassword,
+  })
+
+  await newAdmin.save();
+
+  res.status(201).json({message:"admin register successful",newUser:{
+    adminname:newAdmin.adminname,
+    email:newAdmin.email,
+    password:newAdmin.password
+  }})
+    
+   } catch (error) {
+    
+    res.status(500).json({error:"server error"})
+    
+   }
+   
+
+}
+
+
+exports.loginControllers=async(req,res)=>{
+
+  const {email,password}=req.body;
+
+  try {
+
+    const Admin=await admin.findOne({email})
+    if(!Admin){
+      return res.status(400).json({error:"invalid credential"})
+    }
+
+    //password match
+    const isMatch=await bcrypt.compare(password, Admin.password) 
+
+    if(!isMatch){
+     return res.status(400).json({error:"password is not match"})
+    }
+  
+
+    const token=jwt.sign({id:Admin._id},
+      process.env.JWT_ACCESS_SECRET,{
+        expiresIn:"1h"
+      })
+
+      res.cookie("token",token)
+      res.status(201).json({message:"login successfully",
+        email:Admin.email,
+        password:Admin.password
+      })
+
+  
+
+  } catch (error) {
+    res.status(500).json({error:"error in login server"})
+    
+  }
+}
+
+
+exports.logoutControllers=async(req,res)=>{
+  res.clearCookie("token")
+  res.status(201).json({message:"logout successfully"})
+}
