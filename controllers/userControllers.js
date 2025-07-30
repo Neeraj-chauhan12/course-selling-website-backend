@@ -1,6 +1,9 @@
 const user=require("../models/userModel")
+const Purchase = require('../models/purchaseModel')
+const Course= require("../models/courseModel")
 const bcrypt=require("bcrypt")
 const jwt=require("jsonwebtoken")
+
 const cookie =require("cookie-parser")
 const z =require('zod')
 
@@ -72,10 +75,16 @@ exports.loginControllers=async(req,res)=>{
 
     const token=jwt.sign({id:User._id},
       process.env.JWT_ACCESS_SECRET,{
-        expiresIn:"1h"
+        expiresIn:"1d"
       })
 
-      res.cookie("token",token)
+      //for the safety
+      const cookieOption={
+        httpOnly:true,
+        sameSite:"Strict"
+      }
+
+      res.cookie("token",token,cookieOption)
       res.status(201).json({message:"login successfully",
         email:User.email,
         password:User.password
@@ -93,4 +102,32 @@ exports.loginControllers=async(req,res)=>{
 exports.logoutControllers=async(req,res)=>{
   res.clearCookie("token")
   res.status(201).json({message:"logout successfully"})
+}
+
+
+exports.purchaseControllers=async(req,res)=>{
+
+  const userId=req.userId;
+
+  try {
+
+    const purchased=await Purchase.find({userId})
+
+    let purchasedCourseId=[];
+
+    for(let i=0; i<purchased.length; i++){
+      purchasedCourseId.push(purchased[i].courseId)
+    }
+
+    const courseData=await Course.find({
+      _id:{$in:purchasedCourseId}
+    })
+
+    res.status(201).json({purchased,courseData})
+    
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({error:"error in purchse server"})
+    
+  }
 }

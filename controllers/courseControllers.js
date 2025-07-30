@@ -1,4 +1,5 @@
 const Course=require("../models/courseModel.js")
+const Purchase=require("../models/purchaseModel.js")
 const cloudinary = require("cloudinary")
 
 exports.CreateCourse= async(req,res)=>{
@@ -141,6 +142,33 @@ exports.CourseDetail=async(req,res)=>{
     } catch (error) {
         console.log(error)
         res.status(500).json({error:"error in course detail server"})
+        
+    }
+}
+
+exports.BuyCourse=async(req,res)=>{
+    const {userId}=req;
+    const {courseId}=req.params;
+
+    try {
+
+        const course= await Course.findById(courseId)
+        if(!course){
+          return res.status(404).json({error:"course is not found"})
+        }
+
+        const existCourse=await Purchase.findOne({userId,courseId})
+        if(existCourse){
+            return res.status(400).json({error:"user has purchased this course"})
+        }
+
+        const newPurchase=new Purchase({userId,courseId})
+        await newPurchase.save()
+        res.status(201).json({message:"course purchased successfully",newPurchase})
+        
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({error:"error in buy course server"})
         
     }
 }
