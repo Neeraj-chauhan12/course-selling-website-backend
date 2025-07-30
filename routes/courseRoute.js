@@ -1,9 +1,13 @@
 const express=require("express")
-const { Create } = require("../controllers/courseControllers")
+const { CreateCourse, UpdateCourse, DeleteCourse, GetCourse, CourseDetail } = require("../controllers/courseControllers")
 
 const router=express.Router()
 
-router.post('/create',Create)
+router.post('/create',CreateCourse)
+router.put('/update/:courseId',UpdateCourse)
+router.delete('/delete/:courseId',DeleteCourse)
+router.get('/findCourse',GetCourse)
+router.get('/:courseId',CourseDetail)
 
 
 

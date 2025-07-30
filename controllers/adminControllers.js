@@ -2,9 +2,21 @@ const admin=require("../models/adminModel")
 const bcrypt=require("bcrypt")
 const jwt=require("jsonwebtoken")
 const cookie =require("cookie-parser")
+const z=require('zod')
 
 exports.register=async(req,res)=>{
    const {adminname,email,password}=req.body;
+
+   const adminSchema = z.object({
+         adminname: z.string().min(2,{message:"username must be atleast 6 char long"}),
+         email: z.string().email(),
+         password: z.string().min(8,{message:"password must be arleast 8 char long"})
+       });
+   
+       const validData=adminSchema.safeParse(req.body)
+       if(!validData.success){
+         return res.status(400).json({error: validData.error.issues.map((err)=>err.message)})
+       }
 
    try {
      const adminExist=await admin.findOne({email})

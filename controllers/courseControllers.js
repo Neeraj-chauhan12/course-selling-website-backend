@@ -1,7 +1,7 @@
 const Course=require("../models/courseModel.js")
 const cloudinary = require("cloudinary")
 
-exports.Create= async(req,res)=>{
+exports.CreateCourse= async(req,res)=>{
     const {title,description,amount}=req.body;
 
     try {
@@ -52,4 +52,95 @@ exports.Create= async(req,res)=>{
 
 
 
+}
+
+exports.UpdateCourse=async(req,res)=>{
+    const {courseId}=req.params;
+    const {title,description,amount,image}=req.body;
+
+    try {
+
+        const updateCourse=await Course.updateOne(
+            {
+                _id:courseId,
+            },
+            {
+                title,
+                description,
+                amount,
+                image:{
+                    public_id:image?.public_id,
+                    url:image?.url
+                }
+            }
+        );
+
+        res.status(201).json({message:"course update successfully"})
+        
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({error:"the error in update server"})
+        
+    }
+}
+
+
+exports.DeleteCourse=async(req,res)=>{
+    const {courseId}=req.params;
+
+    try {
+
+        const course=await Course.findOneAndDelete(
+            {
+                _id:courseId
+            }
+        )
+         if(!course){
+            return res.status(404).json({error:"course not found"})
+
+         }
+
+         res.status(201).json({message:"course delete successfully"})
+        
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({error:"error in delete course"})
+        
+    }
+}
+
+exports.GetCourse=async(req,res)=>{
+
+    try {
+        const allCourse=await Course.find()
+    
+    if(!allCourse){
+        return res.status(404).json({error:"course is not found"})
+    }
+    res.status(201).json({message:"course is found",allCourse})
+        
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({error:"error in find all course"})
+    }
+    
+    
+}
+
+exports.CourseDetail=async(req,res)=>{
+    const {courseId}=req.params;
+
+    try {
+        const course=await Course.findById(courseId)
+        if(!course){
+            return res.status(404).json({error:"course not found"})
+        }
+        
+        res.status(201).json({message:"course detail",course})
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({error:"error in course detail server"})
+        
+    }
 }

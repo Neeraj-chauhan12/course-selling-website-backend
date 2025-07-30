@@ -2,9 +2,21 @@ const user=require("../models/userModel")
 const bcrypt=require("bcrypt")
 const jwt=require("jsonwebtoken")
 const cookie =require("cookie-parser")
+const z =require('zod')
 
 exports.register=async(req,res)=>{
    const {username,email,password}=req.body;
+
+   const userSchema = z.object({
+      username: z.string().min(2,{message:"username must be atleast 6 char long"}),
+      email: z.string().email(),
+      password: z.string().min(8,{message:"password must be arleast 8 char long"})
+    });
+
+    const validData=userSchema.safeParse(req.body)
+    if(!validData.success){
+      return res.status(400).json({error: validData.error.issues.map((err)=>err.message)})
+    }
 
    try {
      const userExist=await user.findOne({email})
