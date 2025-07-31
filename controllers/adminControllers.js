@@ -71,7 +71,7 @@ exports.loginControllers=async(req,res)=>{
   
 
     const token=jwt.sign({id:Admin._id},
-      process.env.JWT_ACCESS_SECRET,{
+      process.env.ADMIN_JWT_SECRET,{
         expiresIn:"1h"
       })
 
@@ -91,6 +91,15 @@ exports.loginControllers=async(req,res)=>{
 
 
 exports.logoutControllers=async(req,res)=>{
-  res.clearCookie("token")
+  try {
+    res.clearCookie("token")
   res.status(201).json({message:"logout successfully"})
+    
+  } catch (error) {
+    console.log(error)
+    res.status.json({error:"error in logout server"})
+    
+  }
+  
+  
 }

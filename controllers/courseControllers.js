@@ -3,6 +3,7 @@ const Purchase=require("../models/purchaseModel.js")
 const cloudinary = require("cloudinary")
 
 exports.CreateCourse= async(req,res)=>{
+    const adminId=req.adminId
     const {title,description,amount}=req.body;
 
     try {
@@ -39,7 +40,8 @@ exports.CreateCourse= async(req,res)=>{
             image:{
                 public_id:cloud_response.public_id,
                 url:cloud_response.url
-            }
+            },
+            creatorId:adminId
         }
         const course= await Course.create(courseData)
          res.status(201).json({message:"course is create successfully",course})
@@ -56,6 +58,7 @@ exports.CreateCourse= async(req,res)=>{
 }
 
 exports.UpdateCourse=async(req,res)=>{
+    const adminId=req.adminId
     const {courseId}=req.params;
     const {title,description,amount,image}=req.body;
 
@@ -64,6 +67,7 @@ exports.UpdateCourse=async(req,res)=>{
         const updateCourse=await Course.updateOne(
             {
                 _id:courseId,
+                creatorId:adminId
             },
             {
                 title,
@@ -76,7 +80,7 @@ exports.UpdateCourse=async(req,res)=>{
             }
         );
 
-        res.status(201).json({message:"course update successfully"})
+        res.status(201).json({message:"course update successfully",updateCourse})
         
     } catch (error) {
         console.log(error)
@@ -87,13 +91,15 @@ exports.UpdateCourse=async(req,res)=>{
 
 
 exports.DeleteCourse=async(req,res)=>{
+    const adminId=req.adminId
     const {courseId}=req.params;
 
     try {
 
         const course=await Course.findOneAndDelete(
             {
-                _id:courseId
+                _id:courseId,
+                creatorId:adminId
             }
         )
          if(!course){
