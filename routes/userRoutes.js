@@ -5,7 +5,7 @@ const router=express.Router();
 
 router.post("/register",register)
 router.post("/login",loginControllers)
-router.post("/logout",logoutControllers)
+router.get("/logout",logoutControllers)
 
 router.get('/purchase',userMiddleware,purchaseControllers)
 

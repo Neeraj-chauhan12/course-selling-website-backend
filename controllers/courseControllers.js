@@ -165,12 +165,12 @@ exports.BuyCourse=async(req,res)=>{
 
         const existCourse=await Purchase.findOne({userId,courseId})
         if(existCourse){
-            return res.status(400).json({error:"user has purchased this course"})
+            return res.status(400).json({error:"user has already purchased this course"})
         }
 
         const newPurchase=new Purchase({userId,courseId})
         await newPurchase.save()
-        res.status(201).json({message:"course purchased successfully",newPurchase})
+        res.status(201).json({message:"course purchased successfully",newPurchase,course})
         
     } catch (error) {
         console.log(error)

@@ -19,7 +19,12 @@ dotenv.config();
 app.use(express.json());
 app.use(express.static(path.join(__dirname,"public")));
 app.use(express.urlencoded({extended:true}))
-app.use(cors())
+app.use(cors({
+    origin:process.env.FRONTEND_PORT,
+    credentials:true,
+    methods:["GET","POST","UPDATE","DELETE"],
+    allowedHeaders:["Content-Type","Authorization"]
+}))
 
 app.use(fileUpload({
     useTempFiles : true,

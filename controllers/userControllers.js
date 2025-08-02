@@ -38,11 +38,7 @@ exports.register=async(req,res)=>{
 
   await newUser.save();
 
-  res.status(201).json({message:"user register successful",newUser:{
-    username:newUser.username,
-    email:newUser.email,
-    password:newUser.password
-  }})
+  res.status(201).json({message:"user register successful",newUser})
     
    } catch (error) {
     
@@ -85,10 +81,7 @@ exports.loginControllers=async(req,res)=>{
       }
 
       res.cookie("token",token,cookieOption)
-      res.status(201).json({message:"login successfully",
-        email:User.email,
-        password:User.password
-      })
+      res.status(201).json({message:"login successfully",User,token})
 
   
 
@@ -100,8 +93,16 @@ exports.loginControllers=async(req,res)=>{
 
 
 exports.logoutControllers=async(req,res)=>{
-  res.clearCookie("token")
-  res.status(201).json({message:"logout successfully"})
+    try {
+    res.clearCookie("token")
+    res.status(201).json({message:"logout successfully"})
+    
+  } catch (error) {
+    console.log(error)
+    res.status.json({error:"error in logout server"})
+    
+  }
+  
 }
 
 
