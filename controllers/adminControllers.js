@@ -8,7 +8,7 @@ exports.register=async(req,res)=>{
    const {adminname,email,password}=req.body;
 
    const adminSchema = z.object({
-         adminname: z.string().min(2,{message:"username must be atleast 6 char long"}),
+         adminname: z.string().min(2,{message:"adminname must be atleast 6 char long"}),
          email: z.string().email(),
          password: z.string().min(8,{message:"password must be arleast 8 char long"})
        });
@@ -76,10 +76,7 @@ exports.loginControllers=async(req,res)=>{
       })
 
       res.cookie("token",token)
-      res.status(201).json({message:"login successfully",
-        email:Admin.email,
-        password:Admin.password
-      })
+      res.status(201).json({message:"login successfully",Admin,token })
 
   
 
