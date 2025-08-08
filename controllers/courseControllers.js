@@ -64,7 +64,7 @@ exports.UpdateCourse=async(req,res)=>{
 
     try {
 
-        const updateCourse=await Course.updateOne(
+        const updateCourse=await Course.findOneAndUpdate(
             {
                 _id:courseId,
                 creatorId:adminId
@@ -79,6 +79,10 @@ exports.UpdateCourse=async(req,res)=>{
                 }
             }
         );
+
+        if(!updateCourse){
+            return res.status(404).json({error:"can't update, created by other admin"})
+        }
 
         res.status(201).json({message:"course update successfully",updateCourse})
         
@@ -103,7 +107,7 @@ exports.DeleteCourse=async(req,res)=>{
             }
         )
          if(!course){
-            return res.status(404).json({error:"course not found"})
+            return res.status(404).json({error:"can't delete, created by other admin"})
 
          }
 
