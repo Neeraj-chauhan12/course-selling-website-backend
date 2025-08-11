@@ -31,9 +31,9 @@ app.use(fileUpload({
     tempFileDir : '/tmp/'
 }));
 
-app.use('/user',userRouter);
-app.use('/admin',adminRouter)
-app.use('/course',courseRouter)
+app.use('/api/v1/user',userRouter);
+app.use('/api/v1/admin',adminRouter)
+app.use('/api/v1/course',courseRouter)
 
     // Configuration
     cloudinary.config({ 
